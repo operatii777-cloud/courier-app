@@ -37,6 +37,15 @@ jobs:
           if [ ! -d "ios" ]; then
             echo "Creating iOS structure..."
             flutter create --platforms=ios .
+            echo "✅ iOS structure created"
+          else
+            echo "✅ iOS structure already exists"
+          fi
+          
+          # Verify iOS structure
+          if [ ! -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
+            echo "⚠️  iOS project not found, recreating..."
+            flutter create --platforms=ios .
           fi
 
       - name: Setup iOS certificates (Development)
@@ -101,8 +110,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
-          path: courier-flutter-app/build/ios/ipa/*.ipa
+          path: build/ios/ipa/*.ipa
           retention-days: 30
+          if-no-files-found: warn
 
       - name: Upload to Firebase App Distribution
         if: ${{ secrets.FIREBASE_TOKEN != '' && secrets.FIREBASE_APP_ID != '' }}

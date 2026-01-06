@@ -36,6 +36,15 @@ jobs:
           if [ ! -d "ios" ]; then
             echo "Creating iOS structure..."
             flutter create --platforms=ios .
+            echo "✅ iOS structure created"
+          else
+            echo "✅ iOS structure already exists"
+          fi
+          
+          # Verify iOS structure
+          if [ ! -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
+            echo "⚠️  iOS project not found, recreating..."
+            flutter create --platforms=ios .
           fi
 
       - name: Install iOS dependencies
@@ -45,15 +54,32 @@ jobs:
       - name: Build iOS IPA (Unsigned - for development)
         run: |
           # Build without signing (development only)
+          echo "🔨 Building iOS app..."
           flutter build ios --release --no-codesign
           
+          # Verify build output
+          if [ ! -d "build/ios/iphoneos/Runner.app" ]; then
+            echo "❌ Build failed - Runner.app not found"
+            exit 1
+          fi
+          
           # Create IPA manually
+          echo "📦 Creating IPA..."
           cd build/ios/iphoneos
           mkdir -p Payload
           cp -r Runner.app Payload/
           mkdir -p ../ipa
           zip -r ../ipa/courier-app-unsigned.ipa Payload
           cd ../../..
+          
+          # Verify IPA was created
+          if [ ! -f "build/ios/ipa/courier-app-unsigned.ipa" ]; then
+            echo "❌ IPA creation failed"
+            exit 1
+          fi
+          
+          echo "✅ IPA created successfully"
+          ls -lh build/ios/ipa/
 
       - name: Upload IPA to artifacts
         uses: actions/upload-artifact@v4
