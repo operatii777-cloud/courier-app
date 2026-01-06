@@ -1,15 +1,12 @@
 name: Build iOS App
 
 on:
-  workflow_dispatch:  # Manual trigger
-  push:
-    branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
+  workflow_dispatch:  # Manual trigger only (needs signing certificates)
+  # Disabled automatic trigger - use build-ios-simple.yml for automatic builds
+  # push:
+  #   branches:
+  #     - main
+  #     - master
 
 jobs:
   build-ios:
