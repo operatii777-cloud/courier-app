@@ -29,15 +29,20 @@ jobs:
           pod --version
 
       - name: Get Flutter dependencies
-        working-directory: courier-flutter-app
         run: flutter pub get
 
+      - name: Create iOS structure if missing
+        run: |
+          if [ ! -d "ios" ]; then
+            echo "Creating iOS structure..."
+            flutter create --platforms=ios .
+          fi
+
       - name: Install iOS dependencies
-        working-directory: courier-flutter-app/ios
+        working-directory: ios
         run: pod install
 
       - name: Build iOS IPA (Unsigned - for development)
-        working-directory: courier-flutter-app
         run: |
           # Build without signing (development only)
           flutter build ios --release --no-codesign
@@ -46,6 +51,7 @@ jobs:
           cd build/ios/iphoneos
           mkdir -p Payload
           cp -r Runner.app Payload/
+          mkdir -p ../ipa
           zip -r ../ipa/courier-app-unsigned.ipa Payload
           cd ../../..
 
@@ -53,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ios-ipa-unsigned
-          path: courier-flutter-app/build/ios/ipa/*.ipa
+          path: build/ios/ipa/*.ipa
           retention-days: 30
 
       - name: Generate Download Info

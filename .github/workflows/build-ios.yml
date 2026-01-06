@@ -33,8 +33,14 @@ jobs:
           pod --version
 
       - name: Get Flutter dependencies
-        working-directory: courier-flutter-app
         run: flutter pub get
+
+      - name: Create iOS structure if missing
+        run: |
+          if [ ! -d "ios" ]; then
+            echo "Creating iOS structure..."
+            flutter create --platforms=ios .
+          fi
 
       - name: Setup iOS certificates (Development)
         if: ${{ secrets.IOS_CERTIFICATE_BASE64 != '' }}
@@ -71,11 +77,10 @@ jobs:
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
       - name: Install iOS dependencies
-        working-directory: courier-flutter-app/ios
+        working-directory: ios
         run: pod install
 
       - name: Build iOS IPA
-        working-directory: courier-flutter-app
         run: |
           flutter build ipa --release \
             --build-number=${{ github.run_number }} \
