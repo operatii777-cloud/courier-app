@@ -1,0 +1,69 @@
+name: Build iOS App (Simple - No Signing)
+
+on:
+  workflow_dispatch:  # Manual trigger only
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'courier-flutter-app/**'
+
+jobs:
+  build-ios:
+    name: Build iOS IPA (Unsigned)
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods
+          pod --version
+
+      - name: Get Flutter dependencies
+        working-directory: courier-flutter-app
+        run: flutter pub get
+
+      - name: Install iOS dependencies
+        working-directory: courier-flutter-app/ios
+        run: pod install
+
+      - name: Build iOS IPA (Unsigned - for development)
+        working-directory: courier-flutter-app
+        run: |
+          # Build without signing (development only)
+          flutter build ios --release --no-codesign
+          
+          # Create IPA manually
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r ../ipa/courier-app-unsigned.ipa Payload
+          cd ../../..
+
+      - name: Upload IPA to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa-unsigned
+          path: courier-flutter-app/build/ios/ipa/*.ipa
+          retention-days: 30
+
+      - name: Generate Download Info
+        run: |
+          echo "📱 IPA build completed (unsigned - for development/testing only)!"
+          echo "📦 Artifact: ios-ipa-unsigned"
+          echo "🔗 Download from: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "⚠️  NOTE: This IPA is unsigned and cannot be installed directly on iPhone."
+          echo "   You need to sign it locally with Xcode or use a signing service."
+
