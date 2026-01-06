@@ -79,9 +79,23 @@ jobs:
 
       - name: Build iOS IPA
         run: |
-          flutter build ipa --release \
-            --build-number=${{ github.run_number }} \
-            --build-name=1.0.0
+          # Check if certificates are available
+          if [ -z "${{ secrets.IOS_CERTIFICATE_BASE64 }}" ]; then
+            echo "⚠️  No signing certificates found. Building unsigned IPA instead."
+            flutter build ios --release --no-codesign
+            
+            # Create IPA manually
+            cd build/ios/iphoneos
+            mkdir -p Payload
+            cp -r Runner.app Payload/
+            mkdir -p ../ipa
+            zip -r ../ipa/courier-app-unsigned.ipa Payload
+            cd ../../..
+          else
+            flutter build ipa --release \
+              --build-number=${{ github.run_number }} \
+              --build-name=1.0.0
+          fi
 
       - name: Upload IPA to artifacts
         uses: actions/upload-artifact@v4
