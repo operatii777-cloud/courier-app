@@ -49,38 +49,29 @@ jobs:
 
       - name: Create iOS structure if missing
         run: |
-          # Check if iOS structure is complete
-          if [ ! -d "ios" ] || [ ! -f "ios/Runner.xcodeproj/project.pbxproj" ] || [ ! -f "ios/Podfile" ]; then
-            echo "⚠️  iOS structure incomplete or missing, creating..."
-            # Remove incomplete iOS directory if it exists
-            if [ -d "ios" ]; then
-              echo "Removing incomplete iOS directory..."
-              rm -rf ios
-            fi
-            # Create complete iOS structure
-            echo "Creating iOS structure..."
-            flutter create --platforms=ios .
+          # Check if iOS structure exists
+          if [ ! -d "ios" ] || [ ! -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
+            echo "⚠️  iOS structure missing, creating..."
+            # Use --overwrite flag to handle existing files
+            flutter create --platforms=ios --overwrite .
             echo "✅ iOS structure created"
           else
-            echo "✅ iOS structure already exists and is complete"
+            echo "✅ iOS structure already exists"
           fi
           
-          # Verify iOS structure is complete
+          # Verify structure
           if [ ! -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
-            echo "❌ ERROR: iOS project file still missing after creation"
-            echo "Listing ios directory contents:"
-            ls -la ios/ || echo "ios directory does not exist"
+            echo "❌ ERROR: iOS project file missing"
+            ls -la ios/ 2>/dev/null || echo "ios directory does not exist"
             exit 1
           fi
           
           if [ ! -f "ios/Podfile" ]; then
-            echo "❌ ERROR: Podfile still missing after creation"
+            echo "❌ ERROR: Podfile missing"
             exit 1
           fi
           
           echo "✅ iOS structure verification passed"
-          echo "   - ios/Runner.xcodeproj/project.pbxproj: $(test -f ios/Runner.xcodeproj/project.pbxproj && echo 'exists' || echo 'missing')"
-          echo "   - ios/Podfile: $(test -f ios/Podfile && echo 'exists' || echo 'missing')"
 
       - name: Setup iOS certificates (Development)
         if: ${{ secrets.IOS_CERTIFICATE_BASE64 != '' }}
