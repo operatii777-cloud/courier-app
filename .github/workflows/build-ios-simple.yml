@@ -10,7 +10,7 @@ on:
 jobs:
   build-ios:
     name: Build iOS IPA (Unsigned)
-    runs-on: macos-latest
+    runs-on: macos-14  # Use specific version for faster startup
     
     steps:
       - name: Checkout repository
@@ -23,9 +23,24 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install CocoaPods
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
+      - name: Install CocoaPods (cached)
         run: |
-          sudo gem install cocoapods
+          if ! command -v pod &> /dev/null; then
+            echo "Installing CocoaPods..."
+            sudo gem install cocoapods
+          else
+            echo "✅ CocoaPods already installed"
+          fi
           pod --version
 
       - name: Get Flutter dependencies
@@ -47,15 +62,33 @@ jobs:
             flutter create --platforms=ios .
           fi
 
+      - name: Cache Pod dependencies
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Install iOS dependencies
         working-directory: ios
-        run: pod install
+        run: |
+          # Only run pod install if Podfile.lock changed or Pods cache is missing
+          if [ ! -f "Podfile.lock" ] || [ ! -d "Pods" ]; then
+            echo "Installing pod dependencies..."
+            pod install --repo-update
+          else
+            echo "✅ Pod dependencies cached, skipping install"
+            # Still verify pods are up to date
+            pod install
+          fi
 
       - name: Build iOS IPA (Unsigned - for development)
         run: |
           # Build without signing (development only)
           echo "🔨 Building iOS app..."
-          flutter build ios --release --no-codesign
+          # Use split-debug-info for faster builds (optional)
+          flutter build ios --release --no-codesign --split-debug-info=build/debug-info
           
           # Verify build output
           if [ ! -d "build/ios/iphoneos/Runner.app" ]; then

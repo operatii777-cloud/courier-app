@@ -11,7 +11,7 @@ on:
 jobs:
   build-ios:
     name: Build iOS IPA
-    runs-on: macos-latest
+    runs-on: macos-14  # Use specific version for faster startup
     
     steps:
       - name: Checkout repository
@@ -24,9 +24,24 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install CocoaPods
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cocoapods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-cocoapods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cocoapods-
+
+      - name: Install CocoaPods (cached)
         run: |
-          sudo gem install cocoapods
+          if ! command -v pod &> /dev/null; then
+            echo "Installing CocoaPods..."
+            sudo gem install cocoapods
+          else
+            echo "✅ CocoaPods already installed"
+          fi
           pod --version
 
       - name: Get Flutter dependencies
@@ -82,16 +97,34 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
+      - name: Cache Pod dependencies
+        uses: actions/cache@v4
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Install iOS dependencies
         working-directory: ios
-        run: pod install
+        run: |
+          # Only run pod install if Podfile.lock changed or Pods cache is missing
+          if [ ! -f "Podfile.lock" ] || [ ! -d "Pods" ]; then
+            echo "Installing pod dependencies..."
+            pod install --repo-update
+          else
+            echo "✅ Pod dependencies cached, skipping install"
+            # Still verify pods are up to date
+            pod install
+          fi
 
       - name: Build iOS IPA
         run: |
           # Check if certificates are available
           if [ -z "${{ secrets.IOS_CERTIFICATE_BASE64 }}" ]; then
             echo "⚠️  No signing certificates found. Building unsigned IPA instead."
-            flutter build ios --release --no-codesign
+            # Use split-debug-info for faster builds (optional)
+            flutter build ios --release --no-codesign --split-debug-info=build/debug-info
             
             # Create IPA manually
             cd build/ios/iphoneos
@@ -103,7 +136,8 @@ jobs:
           else
             flutter build ipa --release \
               --build-number=${{ github.run_number }} \
-              --build-name=1.0.0
+              --build-name=1.0.0 \
+              --split-debug-info=build/debug-info
           fi
 
       - name: Upload IPA to artifacts
