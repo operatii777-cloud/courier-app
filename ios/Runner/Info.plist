@@ -50,22 +50,22 @@
 	<true/>
 	
 	<!-- ============================================ -->
-	<!-- GPS PERMISSIONS - NECESARE PENTRU TRACKING -->
+	<!-- GPS PERMISSIONS - REQUIRED FOR DELIVERY TRACKING -->
 	<!-- ============================================ -->
 	
-	<!-- Permisiune pentru locație când aplicația este activă -->
+	<!-- Permission for location when app is active -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Această aplicație necesită acces la locația ta pentru tracking GPS în timpul livrărilor.</string>
 	
-	<!-- Permisiune pentru locație continuă (background) -->
+	<!-- Permission for continuous location (background) -->
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Această aplicație necesită acces continuu la locația ta pentru tracking GPS în timpul livrărilor, chiar și când aplicația rulează în background.</string>
 	
-	<!-- Permisiune combinată (iOS 11+) -->
+	<!-- Combined permission (iOS 11+) -->
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Această aplicație necesită acces continuu la locația ta pentru tracking GPS în timpul livrărilor.</string>
 	
-	<!-- Background Modes (pentru tracking continuu) -->
+	<!-- Background Modes (for continuous tracking) -->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -75,16 +75,36 @@
 	<!-- INTERNET PERMISSIONS -->
 	<!-- ============================================ -->
 	
-	<!-- Permite conexiuni HTTP (pentru development) -->
+	<!-- App Transport Security Configuration -->
+	<!-- For production, use HTTPS endpoints only -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
+		<!-- Allow local development servers (192.168.x.x, localhost) -->
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
-		<!-- Pentru producție, setează la false și configurează HTTPS -->
+		<!-- Exception domains for development/staging -->
+		<!-- Remove or configure properly for production -->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<!-- Allow HTTP to localhost for development -->
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<!-- Add your production domain with HTTPS here -->
+			<!-- Example:
+			<key>restaurant.ro</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			-->
+		</dict>
 	</dict>
 	
 	<!-- ============================================ -->
-	<!-- CAMERA PERMISSIONS (pentru semnătură foto) -->
+	<!-- CAMERA PERMISSIONS (for signature photos) -->
 	<!-- ============================================ -->
 	
 	<key>NSCameraUsageDescription</key>
