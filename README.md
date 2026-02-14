@@ -9,6 +9,8 @@ Aplicație mobilă nativă pentru curieri, conectată la backend-ul Restaurant A
 
 Aceeași aplicație Flutter rulează nativ pe ambele platforme.
 
+📱 **Vrei aplicația pe iOS?** → Vezi [IOS-GHID-RAPID.md](./IOS-GHID-RAPID.md) pentru instrucțiuni complete!
+
 ## 🚀 Instalare
 
 ### 1. Instalează Flutter
