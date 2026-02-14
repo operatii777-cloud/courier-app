@@ -2,6 +2,13 @@
 
 Aplicație mobilă nativă pentru curieri, conectată la backend-ul Restaurant Admin.
 
+## 🎯 Platforme Suportate
+
+✅ **Android** - Complet funcțional  
+✅ **iOS** - Complet funcțional (100% compatibil!)
+
+Aceeași aplicație Flutter rulează nativ pe ambele platforme.
+
 ## 🚀 Instalare
 
 ### 1. Instalează Flutter
@@ -45,9 +52,11 @@ flutter build apk --debug
 # APK-ul va fi în: build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-## 📦 Build APK
+## 📦 Build Aplicație
 
-### Debug APK (pentru testare)
+### 📱 Build pentru Android (APK)
+
+#### Debug APK (pentru testare)
 
 ```bash
 flutter build apk --debug
@@ -55,13 +64,41 @@ flutter build apk --debug
 
 APK-ul va fi generat în: `build/app/outputs/flutter-apk/app-debug.apk`
 
-### Release APK (pentru distribuție)
+#### Release APK (pentru distribuție)
 
 ```bash
 flutter build apk --release
 ```
 
 APK-ul va fi generat în: `build/app/outputs/flutter-apk/app-release.apk`
+
+### 🍎 Build pentru iOS (IPA)
+
+**Opțiune 1: Build în Cloud (Recomandat - fără Mac!)**
+
+Aplicația poate fi compilată pentru iOS direct în GitHub Actions, fără să ai un Mac!
+
+```bash
+# 1. Push pe GitHub
+git push origin main
+
+# 2. Mergi pe GitHub → Actions → "Build iOS App (Simple)"
+# 3. Descarcă IPA-ul din Artifacts după build
+```
+
+**Opțiune 2: Build Local (necesită Mac cu Xcode)**
+
+```bash
+# Instalează dependențele iOS
+cd ios
+pod install
+cd ..
+
+# Build IPA
+flutter build ios --release
+```
+
+📚 **Pentru detalii complete iOS**: Vezi [IOS-SETUP.md](./IOS-SETUP.md) și [CLOUD-BUILD-SETUP.md](./CLOUD-BUILD-SETUP.md)
 
 ## 🔧 Configurare
 
@@ -70,6 +107,12 @@ APK-ul va fi generat în: `build/app/outputs/flutter-apk/app-release.apk`
 1. **Min SDK Version**: 21 (Android 5.0)
 2. **Target SDK Version**: 33+
 3. **Internet Permission**: ✅ Configurat automat
+
+### iOS
+
+1. **Min iOS Version**: 12.0
+2. **Permissions**: GPS, Camera, Network (configurat automat)
+3. **Build**: Disponibil prin GitHub Actions (Cloud) sau Xcode (Mac)
 
 ### Funcționalități
 
@@ -82,13 +125,25 @@ APK-ul va fi generat în: `build/app/outputs/flutter-apk/app-release.apk`
 - ✅ Calcul câștiguri
 - ✅ Auto-refresh comenzilor
 
-## 📱 Instalare APK pe telefon
+## 📱 Instalare pe Dispozitiv
+
+### Instalare APK pe Android
 
 1. **Transferă APK-ul pe telefon** (USB, email, cloud)
 2. **Activează "Instalare din surse necunoscute"**:
    - Settings → Security → Unknown Sources (ON)
 3. **Deschide APK-ul** și confirmă instalarea
 4. **Deschide aplicația** și autentifică-te
+
+### Instalare IPA pe iOS
+
+1. **Folosește TestFlight** (recomandat pentru testare)
+   - Upload IPA în App Store Connect
+   - Invită testeri prin TestFlight
+2. **Sau instalează direct** (necesită certificat de development)
+   - Conectează iPhone la Mac
+   - Instalează prin Xcode
+3. **Sau folosește serviciu de signing** (ex: AltStore, Sideloadly)
 
 ## 🔗 Conectare la Backend
 
@@ -202,6 +257,7 @@ flutter build ios
 - Aplicația necesită conexiune la internet
 - Backend-ul trebuie să fie accesibil de pe telefon
 - Pentru producție, folosește HTTPS
-- APK-ul debug poate fi instalat direct pe telefon
-- **iOS necesită Mac pentru compilare**
+- **Android**: APK-ul debug poate fi instalat direct pe telefon
+- **iOS**: Build disponibil prin GitHub Actions (Cloud) sau Xcode (Mac local)
+- **iOS App Store**: Necesită Apple Developer Program ($99/an) pentru publicare
 
