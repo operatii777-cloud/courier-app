@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Bundle Identifier -->
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Courier Restaurant</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>courier_app</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	
+	<!-- ============================================ -->
+	<!-- GPS PERMISSIONS - REQUIRED FOR DELIVERY TRACKING -->
+	<!-- ============================================ -->
+	
+	<!-- Permission for location when app is active -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Această aplicație necesită acces la locația ta pentru tracking GPS în timpul livrărilor.</string>
+	
+	<!-- Permission for continuous location (background) -->
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Această aplicație necesită acces continuu la locația ta pentru tracking GPS în timpul livrărilor, chiar și când aplicația rulează în background.</string>
+	
+	<!-- Combined permission (iOS 11+) -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Această aplicație necesită acces continuu la locația ta pentru tracking GPS în timpul livrărilor.</string>
+	
+	<!-- Background Modes (for continuous tracking) -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	
+	<!-- ============================================ -->
+	<!-- INTERNET PERMISSIONS -->
+	<!-- ============================================ -->
+	
+	<!-- App Transport Security Configuration -->
+	<!-- For production, use HTTPS endpoints only -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Allow local development servers (192.168.x.x, localhost) -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+		<!-- Exception domains for development/staging -->
+		<!-- Remove or configure properly for production -->
+		<key>NSExceptionDomains</key>
+		<dict>
+			<!-- Allow HTTP to localhost for development -->
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+			<!-- Add your production domain with HTTPS here -->
+			<!-- Example:
+			<key>restaurant.ro</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			-->
+		</dict>
+	</dict>
+	
+	<!-- ============================================ -->
+	<!-- CAMERA PERMISSIONS (for signature photos) -->
+	<!-- ============================================ -->
+	
+	<key>NSCameraUsageDescription</key>
+	<string>Această aplicație necesită acces la cameră pentru a fotografia semnătura clientului la livrare.</string>
+	
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Această aplicație necesită acces la galerie pentru a selecta fotografii ale semnăturii clientului.</string>
+	
+</dict>
+</plist>
+
